@@ -121,6 +121,7 @@ Stated plainly, per the split the architecture plan already commits to, so futur
 - `mappers/` — `CallbackTableAggregate`, `FrameTransferObject`.
 - `interfaces/` — the `StateService` ABC's shape (its `get`/`set` contract), independent of which host backs a concrete implementation.
 - `events/` — `BuildCallbackTable`, `DispatchCallback`. Both host-agnostic `DomainEvent` subclasses per Section 5.
+- `assets/core.py` — the `MUI_DEFAULT_ERRORS` error catalog and the `state_service` flagged service-registration data, both host-agnostic data structures modeled on core `tiferet`'s own `assets/core.py` ids/data/groups style. Exported specifically so a consuming app can merge them into its own error catalog and DI configuration instead of redefining them.
 
 **Variable — one definition per host/dialect:**
 - `utils/streamlit.py` — `StreamlitState(StateService)`, wrapping `st.session_state`; the frontend-bundle path resolver used by `declare_component(path=...)`.
@@ -149,8 +150,8 @@ Each item below is stated as a candidate for its own RFP, and each maps one-to-o
 
 1. **Rendering-strategy spike & repo scaffold.** Confirm the composite payload shape the unmodified `okld/streamlit-elements` frontend bundle reports through the new public `on_change` mechanism, and establish the package skeleton (`pyproject.toml`, vendored bundle plus license attribution under `assets/streamlit/`) everything else depends on. This resolves the open question flagged in Sections 4, 5.2, and 8.
 2. **Domain & mapper layer.** Implement `Element`, `Frame`, `CallbackTable` as domain objects and `CallbackTableAggregate`/`FrameTransferObject` as mappers, sized against the payload shape item 1 confirms.
-3. **Events layer.** Implement `BuildCallbackTable` and `DispatchCallback` as `DomainEvent` subclasses with `DomainEventTestBase` coverage, turning Section 5.1 and 5.2's agnostic verdicts into tested code.
-4. **Interfaces & DI.** Implement the `StateService` ABC and the `di/` layer resolving it by dialect flag, turning Section 7's DI relationship rules into working `ServiceConfiguration`/`FlaggedDependency` code.
+3. **Events layer.** Implement `BuildCallbackTable` and `DispatchCallback` as `DomainEvent` subclasses with `DomainEventTestBase` coverage, turning Section 5.1 and 5.2's agnostic verdicts into tested code, alongside the `MUI_DEFAULT_ERRORS` catalog entry `DispatchCallback` raises against.
+4. **Interfaces & DI.** Implement the `StateService` ABC and the `di/` layer resolving it by dialect flag, turning Section 7's DI relationship rules into working `ServiceConfiguration`/`FlaggedDependency` code, backed by a consumer-importable service-registration constant in `assets/core.py`.
 5. **Streamlit binding.** Implement `utils/streamlit.py` (`StreamlitState`), `blueprints/core.py`, and `blueprints/streamlit.py` — the one behavior this document marks fully variable (Section 5.3, Section 8) — plus an end-to-end working demo.
 6. **Widget catalog v0 & release polish.** Ship the first real MUI `Element` factories (e.g. Button, TextField, Box) needed to make item 5's demo useful, finalize README/`AGENTS.md`, and tag the first prototype alpha.
 
