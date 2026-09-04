@@ -1,0 +1,45 @@
+This directory vendors the compiled frontend bundle from `okld/streamlit-elements`,
+unmodified, as a Streamlit custom-component asset.
+
+Upstream project : okld/streamlit-elements
+Upstream URL     : https://github.com/okld/streamlit-elements
+Vendored from    : streamlit-elements==0.1.0 (PyPI sdist), frontend/build/
+Vendored on      : confirmed live via MUI1-RFP-001's rendering-strategy spike
+Upstream license : MIT (confirmed against https://github.com/okld/streamlit-elements/blob/main/LICENSE)
+
+Compatibility with this package's own license
+----------------------------------------------
+tiferet-mui is MIT-licensed (see the repository root LICENSE, copyright
+Great Strength Systems). The upstream bundle's MIT license is fully
+compatible: both are permissive licenses with no copyleft or additional
+restrictions, and MIT explicitly permits redistribution -- including as
+part of a larger, differently-attributed work -- provided the upstream
+copyright notice and permission text are preserved, which is done below.
+
+Only the compiled frontend bundle (frontend/build/) is vendored. No
+Python source from streamlit-elements is copied, imported, or otherwise
+reused by this package; only the assets under this directory (the
+compiled JS/HTML bundle, unmodified) come from that project.
+
+Upstream LICENSE text
+----------------------
+
+Copyright (c) 2022 okld
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
