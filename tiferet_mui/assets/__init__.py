@@ -1,2 +1,12 @@
-# Placeholder. Host-agnostic constants and error definitions land here
-# (RFP-003 §core, RFP-004 §DI) per the core-domain distillation, Section 8.
+# *** exports
+
+# ** app
+from .core import (
+    STATE_SERVICE_ID,
+    STATE_SERVICE_REGISTRATION_DATA,
+)
+
+__all__ = [
+    'STATE_SERVICE_ID',
+    'STATE_SERVICE_REGISTRATION_DATA',
+]

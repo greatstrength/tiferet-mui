@@ -1,2 +1,8 @@
-# Placeholder. The StateService ABC lands here (RFP-004) per the
-# core-domain distillation, Section 8.
+# *** exports
+
+# ** app
+from .state import StateService
+
+__all__ = [
+    'StateService',
+]
