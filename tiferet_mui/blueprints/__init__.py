@@ -1,5 +1,10 @@
-# Placeholder. blueprints/core.py (dialect-agnostic) and
-# blueprints/streamlit.py (the Streamlit Binding) land here (RFP-005) per
-# the core-domain distillation, Section 5.3. This spike's disposable
-# rendering-strategy findings (see spike/) inform, but do not become,
-# that implementation.
+"""Tiferet MUI host-agnostic blueprint exports."""
+
+# *** exports
+
+__all__ = [
+    'build_handler_builder',
+]
+
+# ** app
+from .core import build_handler_builder
