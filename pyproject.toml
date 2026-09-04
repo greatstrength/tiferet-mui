@@ -1,0 +1,43 @@
+[project]
+name = "tiferet-mui"
+dynamic = ["version"]
+description = "Tiferet-styled Material UI, Nivo, and Monaco bindings for Streamlit apps, using Streamlit's public component API."
+authors = [
+    { name = "Andrew Shatz, Great Strength Systems", email = "andrew@greatstrength.me" }
+]
+license = { text = "MIT" }
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "tiferet>=2.0.3",
+]
+
+[project.urls]
+Homepage = "https://github.com/greatstrength/tiferet-mui"
+Repository = "https://github.com/greatstrength/tiferet-mui"
+Download = "https://github.com/greatstrength/tiferet-mui"
+
+[project.optional-dependencies]
+streamlit = [
+    "streamlit>=1.36.0",
+]
+test = [
+    "pytest>=7.0",
+    "pytest-cov",
+]
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["tiferet_mui*"]
+
+[tool.setuptools.package-data]
+tiferet_mui = [
+    "assets/streamlit/**/*",
+]
+
+[tool.setuptools.dynamic]
+version = { attr = "tiferet_mui.__version__" }
