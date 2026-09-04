@@ -1,2 +1,11 @@
-# Placeholder. BuildCallbackTable and DispatchCallback DomainEvent
-# subclasses land here (RFP-003) per the core-domain distillation, Section 5.
+"""Tiferet MUI Event Exports."""
+
+# *** exports
+
+__all__ = [
+    'BuildCallbackTable',
+    'DispatchCallback',
+]
+
+# ** app
+from .core import BuildCallbackTable, DispatchCallback
