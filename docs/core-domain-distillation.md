@@ -5,7 +5,7 @@
 
 ## 1. Purpose of this document
 
-The vision statement says *what* Tiferet MUI is for and why it is worth building. This document says *how the domain will actually work*: the vocabulary, the behaviors, the rules those behaviors enforce, and the relationships between the parts. It is the reference a contributor should read before drafting or implementing an RFP against this package, and the reference a reviewer should read before judging whether a change belongs.
+The vision statement says *what* Tiferet MUI is for and why it is worth building. This document says *how the domain will actually work*: the vocabulary, the behaviors, the rules those behaviors enforce, and the relationships between the parts. It is the reference a contributor should read before drafting or implementing a change to this package, and the reference a reviewer should read before judging whether a change belongs. It represents the ideal model description for this version of the domain; specification documents that propose changes should cite this document, not the other way around.
 
 **This is a forward-looking distillation.** As of this writing the repository contains no package code — `git log` shows only the initial commit (`LICENSE`, `README.md`) plus this branch's two documentation additions. There is no `tiferet_mui/` directory, no `pyproject.toml`, and none of the modules named below exist yet. Every module path in this document is a **planned** location, not a verified citation, and is marked as such. Nothing here should be read as an assertion that code currently behaves a given way.
 
@@ -16,7 +16,7 @@ Because there is no implementation to read, every claim below is grounded in one
    - [`okld/streamlit-elements#35`](https://github.com/okld/streamlit-elements/issues/35) — "onChange event not working on Streamlit 1.34," opened 2024-05-21, **still open**. The thread's own history is the evidence for the vision statement's claim that the only available fixes are private-module import patches (e.g. importing `custom_component` in place of the module's broken `components` import) that keep breaking across Streamlit releases (1.34, 1.40) and require reapplication by each affected app.
    - [`streamlit/streamlit#8633`](https://github.com/streamlit/streamlit/pull/8633) — "Allow passing on_change_callback for CustomComponents," merged 2024-05-22, shipped in Streamlit 1.36. This is the PR that added the public, supported `on_change` keyword argument to a component instance call (`declare_component(...)(..., on_change=callback)`), replacing the private-attribute patches the `#35` thread had been trading. It is the "supported door" the domain vision statement refers to, and it is the one mechanism this domain is built around.
 
-Once RFP-001 through RFP-006 land code, this document should be revised to replace "planned" module references with verified `path:line` citations, per the standing convention for implemented domains.
+Once this domain's implementation lands, this document should be revised to replace "planned" module references with verified `path:line` citations, per the standing convention for implemented domains.
 
 ## 2. The core domain, restated precisely
 
@@ -51,7 +51,7 @@ Every other term used later in this document (`StateService`, `CallbackTableAggr
 **Inputs:**
 - A caller-authored `Frame`: a tree of `Element`s assembled fresh on each render pass. The caller decides what widgets exist and what props they carry; the domain does not generate this tree.
 - A `StateService`-backed store for session-scoped values needed across reruns (e.g. the last known value of a stateful widget), resolved by dialect flag through `tiferet`'s own `DIContext`/`ServiceConfiguration`/`FlaggedDependency` mechanism rather than hard-wired to Streamlit.
-- The composite interaction payload the mounted host component reports back once a user acts on it. **The exact shape of this payload is not yet confirmed** — the architecture plan flags this explicitly as the unverified assumption RFP-001's rendering-strategy spike exists to settle, since the `okld/streamlit-elements` frontend bundle being reused was originally built for a different, now-broken callback design. Until that spike runs, the `StateService` contract and `DispatchCallback` payload assumptions below are provisional.
+- The composite interaction payload the mounted host component reports back once a user acts on it. **The exact shape of this payload is not yet confirmed** — the architecture plan flags this explicitly as an assumption a rendering-strategy spike must settle before implementation, since the `okld/streamlit-elements` frontend bundle being reused was originally built for a different, now-broken callback design. Until that spike runs, the `StateService` contract and `DispatchCallback` payload assumptions below are provisional.
 
 **The convention that gives the domain its leverage** is the pairing of description and registration in a single pass: a `callback_id` is assigned to an interactive `Element` at the moment its owning `Frame` is composed, not afterward. This is what lets one small, generic dispatch step — rather than a per-widget-type dispatcher — route any reported interaction to its handler. It is also what makes an interaction reported against no registered id a detectable, reportable error instead of a silently ignored event, per the vision statement's "failure stops being silent" commitment.
 
@@ -71,7 +71,7 @@ Planned as `BuildCallbackTable`, a `DomainEvent` subclass living at `tiferet_mui
 
 Planned as `DispatchCallback`, also a `DomainEvent` subclass in `tiferet_mui/events/`. Its job is strictly a lookup-and-invoke: given the current `CallbackTable` and a reported payload, find the `callback_id` inside that payload, and call the handler the `CallbackTable` has for it — raising a domain error rather than failing silently if the id is unrecognized (echoing the vision statement's "an interaction that arrives with no one listening is a reported error, not a shrug").
 
-**Verdict: agnostic**, with one caveat carried over from Section 4: the *shape* of the incoming payload this event parses is provisional until RFP-001's spike confirms it. The lookup-and-invoke mechanism itself does not depend on the host; the field names inside the payload it reads might, until confirmed otherwise.
+**Verdict: agnostic**, with one caveat carried over from Section 4: the *shape* of the incoming payload this event parses is provisional until a rendering-strategy spike confirms it. The lookup-and-invoke mechanism itself does not depend on the host; the field names inside the payload it reads might, until confirmed otherwise.
 
 ### 5.3 Mount the Frame and receive its reports (the Streamlit Binding)
 *Declare the vendored component instance with the host's public `on_change` mechanism, and close over `BuildCallbackTable`/`DispatchCallback` to produce one plain callable.*
@@ -84,7 +84,7 @@ Planned to live in `tiferet_mui/blueprints/streamlit.py`, the dialect entrypoint
 
 Unlike domains that declare their pipeline in a `feature.yml` read by `FeatureContext`, this package has no `repos/` layer and therefore no YAML-declared pipeline — the architecture plan is explicit that DI configuration here is small enough to be declared as in-code `ServiceConfiguration` objects, and there are no other consumer-facing sequencing points that would justify config-driven orchestration. Composition instead happens as a direct call sequence, assembled by `tiferet_mui/blueprints/core.py` (dialect-agnostic: resolves the DI-backed `StateService` and returns a handler-building function) and closed over by the dialect entrypoint in `blueprints/streamlit.py`.
 
-The sequence, once RFP-005 exists, is expected to be:
+The sequence, once implemented, is expected to be:
 
 ```mermaid
 flowchart LR
@@ -110,7 +110,7 @@ flowchart LR
 
 **Dependency direction on other Tiferet-family packages.** Tiferet MUI depends on `tiferet` and (optionally) `streamlit` only. It never imports or depends on `tiferet-streamlit`, and it defines no vocabulary of features, views, or pages — that vocabulary belongs entirely to `tiferet-streamlit`, and judging whether a proposed addition to this package belongs here requires checking it against that boundary specifically (Section 9 names it again as an explicit exclusion).
 
-**Judging any of the above requires the plan itself as input**, in the same sense a compiler's relationship rules require knowing a file's declared component type before a given import can be judged valid or invalid: none of these constraints are enforced by any tooling yet (there is no code to enforce them against), so until RFP-001 through RFP-006 land, this document and the architecture plan it is grounded in are the only recorded source of truth for which relationships are permitted.
+**Judging any of the above requires the plan itself as input**, in the same sense a compiler's relationship rules require knowing a file's declared component type before a given import can be judged valid or invalid: none of these constraints are enforced by any tooling yet (there is no code to enforce them against), so until this domain is implemented, this document and the architecture plan it is grounded in are the only recorded source of truth for which relationships are permitted.
 
 ## 8. The agnostic core and the variable edge
 
@@ -127,11 +127,11 @@ Stated plainly, per the split the architecture plan already commits to, so futur
 - `utils/streamlit.py` — `StreamlitState(StateService)`, wrapping `st.session_state`; the frontend-bundle path resolver used by `declare_component(path=...)`.
 - `blueprints/streamlit.py` — the Streamlit `Binding`: the `declare_component` wiring, the `on_change` mechanism, and the closure that ties `BuildCallbackTable`/`DispatchCallback` to that specific host's reporting mechanism.
 
-**Honest entanglement inventory.** Because no code exists yet, there is nothing to cite at `path:line` — the inventory that would normally appear here once implementation lands is instead a list of the specific points where this seam is at risk of being violated *when* code is written, so that RFP review can check for exactly these things:
+**Honest entanglement inventory.** Because no code exists yet, there is nothing to cite at `path:line` — the inventory that would normally appear here once implementation lands is instead a list of the specific points where this seam is at risk of being violated *when* code is written, so that implementation review can check for exactly these things:
 
 1. **`blueprints/core.py` must stay import-clean of `streamlit`.** The architecture plan positions it as the dialect-agnostic composition helper that resolves the DI-backed `StateService` and hands back a handler-building function. If a future implementation imports `streamlit` there directly — even for a type hint or a convenience default — the agnostic/variable line drawn in this section stops being true in practice, regardless of what this document says.
-2. **The `CallbackTable`/`DispatchCallback` payload contract is provisional, not yet agnostic in a verified sense.** Section 4 and Section 5.2 already flag that the incoming interaction payload's shape is an open question pending RFP-001's spike. If the confirmed shape turns out to require host-specific fields to reach `DispatchCallback` correctly, the "agnostic" verdict given to that event in Section 5.2 would need to be revisited before RFP-003 is implemented as currently scoped.
-3. **Subdomain isolation is a naming convention, not an enforced rule.** Nothing described in the architecture plan mechanically prevents a future second-host module from importing `assets/streamlit/`'s vendored bundle or `utils/streamlit.py` by mistake — the isolation depends entirely on contributors following the "only `<layer>/streamlit.py` imports `streamlit`" convention by hand. This is worth recording now, before any code exists to audit, as the first thing a code-review pass against RFP-001 through RFP-006 should check by eye.
+2. **The `CallbackTable`/`DispatchCallback` payload contract is provisional, not yet agnostic in a verified sense.** Section 4 and Section 5.2 already flag that the incoming interaction payload's shape is an open question pending a rendering-strategy spike. If the confirmed shape turns out to require host-specific fields to reach `DispatchCallback` correctly, the "agnostic" verdict given to that event in Section 5.2 would need to be revisited before it is implemented as currently scoped.
+3. **Subdomain isolation is a naming convention, not an enforced rule.** Nothing described in the architecture plan mechanically prevents a future second-host module from importing `assets/streamlit/`'s vendored bundle or `utils/streamlit.py` by mistake — the isolation depends entirely on contributors following the "only `<layer>/streamlit.py` imports `streamlit`" convention by hand. This is worth recording now, before any code exists to audit, as the first thing a code-review pass against this domain's implementation should check by eye.
 
 ## 9. Boundaries
 
@@ -146,13 +146,13 @@ Stated plainly, per the split the architecture plan already commits to, so futur
 
 ## 10. Where this leads
 
-Each item below is stated as a candidate for its own RFP, and each maps one-to-one onto the six-RFP prototype schedule already fixed for milestone `v1.0.0b1`:
+Each item below is a candidate slice of future implementation work, stated so it can be scoped and sequenced independently:
 
 1. **Rendering-strategy spike & repo scaffold.** Confirm the composite payload shape the unmodified `okld/streamlit-elements` frontend bundle reports through the new public `on_change` mechanism, and establish the package skeleton (`pyproject.toml`, vendored bundle plus license attribution under `assets/streamlit/`) everything else depends on. This resolves the open question flagged in Sections 4, 5.2, and 8.
 2. **Domain & mapper layer.** Implement `Element`, `Frame`, `CallbackTable` as domain objects and `CallbackTableAggregate`/`FrameTransferObject` as mappers, sized against the payload shape item 1 confirms.
 3. **Events layer.** Implement `BuildCallbackTable` and `DispatchCallback` as `DomainEvent` subclasses with `DomainEventTestBase` coverage, turning Section 5.1 and 5.2's agnostic verdicts into tested code, alongside the `MUI_DEFAULT_ERRORS` catalog entry `DispatchCallback` raises against.
 4. **Interfaces & DI.** Implement the `StateService` ABC and the `di/` layer resolving it by dialect flag, turning Section 7's DI relationship rules into working `ServiceConfiguration`/`FlaggedDependency` code, backed by a consumer-importable service-registration constant in `assets/core.py`.
 5. **Streamlit binding.** Implement `utils/streamlit.py` (`StreamlitState`), `blueprints/core.py`, and `blueprints/streamlit.py` — the one behavior this document marks fully variable (Section 5.3, Section 8) — plus an end-to-end working demo.
-6. **Widget catalog v0 & release polish.** Ship the first real MUI `Element` factories (e.g. Button, TextField, Box) needed to make item 5's demo useful, finalize README/`AGENTS.md`, and tag the first prototype alpha.
+6. **Widget catalog v0 & release polish.** Ship the first real MUI `Element` factories (e.g. Button, TextField, Box) needed to make item 5's demo useful, and finalize README/`AGENTS.md`.
 
 Together these six items are the difference between the domain this document describes and the domain the vision statement promises. Once they land, this document's "planned" citations should be replaced with verified `path:line` references, and the entanglement inventory in Section 8 should be re-audited against real code rather than anticipated risk.
