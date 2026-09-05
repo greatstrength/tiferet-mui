@@ -7,8 +7,8 @@ handles mounting and interaction delivery.
 
 ## Install
 
-Install the core package when you only need its domain models and widget
-catalog:
+Install the core package when you only need its domain models, widget defaults,
+and domain events:
 
 ```bash
 pip install tiferet-mui
@@ -22,13 +22,14 @@ pip install "tiferet-mui[streamlit]"
 
 ## Minimal usage
 
-Compose a `Frame` from the widget catalog, then mount it with the Streamlit
-binding:
+Materialize `Element` instances from the catalogued widget defaults, compose a
+`Frame`, then mount it with the Streamlit binding:
 
 ```python
-from tiferet_mui import box, button, text_field
+from tiferet.events import DomainEvent
 from tiferet_mui.blueprints.streamlit import build_streamlit_binding
 from tiferet_mui.domain import Frame
+from tiferet_mui.events import CreateElement
 
 
 def save() -> None:
@@ -37,10 +38,22 @@ def save() -> None:
 
 frame = Frame(
     elements=[
-        box(
-            text_field('Name', fullWidth=True),
-            button('Save', on_click=save, variant='contained'),
-            sx={'display': 'grid', 'gap': 2},
+        DomainEvent.handle(
+            CreateElement,
+            widget_type='box',
+            props={'sx': {'display': 'grid', 'gap': 2}},
+            children=[
+                DomainEvent.handle(
+                    CreateElement,
+                    widget_type='text_field',
+                    props={'label': 'Name', 'fullWidth': True},
+                ),
+                DomainEvent.handle(
+                    CreateElement,
+                    widget_type='button',
+                    props={'children': 'Save', 'onClick': save},
+                ),
+            ],
         ),
     ],
 )

@@ -19,15 +19,14 @@ callbacks.
 ```text
 tiferet_mui/
 ├── __init__.py          — Package version
-├── assets/              — Callback error data, DI registration data, and vendored Streamlit assets
+├── assets/              — Error data, widget defaults, DI registration data, and vendored Streamlit assets
 ├── blueprints/          — Host-agnostic handler composition and the Streamlit binding
 ├── di/                  — Code-declared StateService registration and DIContext factory
 ├── domain/              — Element, Frame, and CallbackTable domain objects
-├── events/              — BuildCallbackTable and DispatchCallback domain events
+├── events/              — CreateElement, BuildCallbackTable, and DispatchCallback domain events
 ├── interfaces/          — StateService contract
 ├── mappers/             — CallbackTableAggregate and FrameTransferObject
 ├── utils/               — Streamlit session-state adapter and vendored bundle path helper
-└── widgets.py           — Host-agnostic Button, TextField, and Box Element factories
 ```
 
 This package intentionally has no `contexts/` or `repos/` layer. The consuming
@@ -40,27 +39,28 @@ callable rather than owning a runtime hub.
   `type`, JSON-compatible `props`, and nested `children`.
 - **Frame** (`tiferet_mui/domain/frame.py`) holds the root Elements for one
   render pass.
-- **Widget catalog** (`tiferet_mui/widgets.py`) provides `button`,
-  `text_field`, and `box` convenience factories. It is host-agnostic and must
-  not import `streamlit`.
+- **Widget defaults** (`tiferet_mui/assets/core.py`) define host-agnostic
+  Button, TextField, and Box data shapes. They remain plain data and must not
+  import domain or host layers.
 - **CallbackTable** (`tiferet_mui/domain/callback_table.py`) is the immutable
   callback-id-to-handler registry built for a Frame.
-- **BuildCallbackTable** and **DispatchCallback**
-  (`tiferet_mui/events/core.py`) respectively register interactive Elements and
-  route a reported callback to its handler.
+- **CreateElement**, **BuildCallbackTable**, and **DispatchCallback**
+  (`tiferet_mui/events/core.py`) respectively materialize an Element from a
+  widget default, register interactive Elements, and route a reported callback
+  to its handler.
 - **Streamlit binding** (`tiferet_mui/blueprints/streamlit.py`) is the
   host-specific edge. It serializes a Frame for the vendored component and uses
   Streamlit's public `on_change` component callback.
 
 Only the Streamlit-specific adapter modules and binding may import
-`streamlit`. Domain models, events, mappers, interfaces, DI, and the widget
-catalog stay host-agnostic.
+`streamlit`. Domain models, events, mappers, interfaces, DI, and widget-default
+data stay host-agnostic.
 
 ## Testing
 
 - **Framework:** `pytest`
 - **Test locations:** Co-located package tests, including
-  `tiferet_mui/tests/test_widgets.py` for the widget catalog.
+  `tiferet_mui/events/tests/test_events.py` for CreateElement coverage.
 - **Full suite:** `pytest tiferet_mui/ -v`
 - **Interactive demo E2E:** `pytest tiferet_mui/blueprints/tests/test_streamlit_e2e.py -v`
 - **Manual demo:** `streamlit run examples/streamlit_binding_demo.py`
