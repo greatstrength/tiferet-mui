@@ -21,7 +21,6 @@ def test_state_service_cannot_be_instantiated():
     with pytest.raises(TypeError):
         StateService()
 
-
 # ** test: concrete_state_service_satisfies_contract
 def test_concrete_state_service_satisfies_contract():
     '''Test that a minimal concrete StateService can store and retrieve values.'''

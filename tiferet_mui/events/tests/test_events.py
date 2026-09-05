@@ -30,7 +30,6 @@ def button_handler(**kwargs):
     # Return the supplied callback parameters.
     return kwargs
 
-
 # ** function: text_handler
 def text_handler(**kwargs):
     '''
@@ -44,7 +43,6 @@ def text_handler(**kwargs):
 
     # Return the supplied callback parameters.
     return kwargs
-
 
 # *** constants
 
@@ -71,7 +69,6 @@ FRAME = Frame(
 CALLBACK_TABLE = CallbackTable(
     handlers={'button_00': button_handler},
 )
-
 
 # *** tests
 
@@ -118,7 +115,6 @@ class TestBuildCallbackTable(DomainEventTestBase):
         assert not isinstance(callback_table, CallbackTableAggregate)
         with pytest.raises(AttributeError):
             callback_table.register('unexpected', button_handler)
-
 
 # ** test: TestDispatchCallback
 class TestDispatchCallback(DomainEventTestBase):

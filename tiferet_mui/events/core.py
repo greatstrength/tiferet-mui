@@ -100,7 +100,6 @@ class BuildCallbackTable(DomainEvent):
         # Report that the element has no registered interaction.
         return None, None
 
-
 # ** event: dispatch_callback
 class DispatchCallback(DomainEvent):
     '''

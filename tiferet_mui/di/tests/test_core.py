@@ -76,7 +76,6 @@ def test_context_resolves_registered_dialect():
     # Verify the dialect-specific implementation was created.
     assert isinstance(state_service, StubStateService)
 
-
 # ** test: context_rejects_unregistered_dialect
 def test_context_rejects_unregistered_dialect():
     '''Test that an unregistered dialect produces Tiferet's clear DI error.'''
@@ -101,7 +100,6 @@ def test_context_rejects_unregistered_dialect():
 
     # Verify the error identifies a missing dependency registration.
     assert error.value.error_code == DI_DEPENDENCY_NOT_REGISTERED_ID
-
 
 # ** test: host_agnostic_modules_do_not_import_streamlit
 def test_host_agnostic_modules_do_not_import_streamlit():
