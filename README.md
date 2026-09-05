@@ -22,39 +22,34 @@ pip install "tiferet-mui[streamlit]"
 
 ## Minimal usage
 
-Materialize `Element` instances from the catalogued widget defaults, compose a
-`Frame`, then mount it with the Streamlit binding:
+Build a nested Frame from widget specifications, then mount it with the
+Streamlit binding:
 
 ```python
-from tiferet.events import DomainEvent
+from tiferet_mui.blueprints.core import build_frame
 from tiferet_mui.blueprints.streamlit import build_streamlit_binding
-from tiferet_mui.domain import Frame
-from tiferet_mui.events import CreateElement
 
 
 def save() -> None:
     print('Saved.')
 
 
-frame = Frame(
+frame = build_frame(
     elements=[
-        DomainEvent.handle(
-            CreateElement,
-            widget_type='box',
-            props={'sx': {'display': 'grid', 'gap': 2}},
-            children=[
-                DomainEvent.handle(
-                    CreateElement,
-                    widget_type='text_field',
-                    props={'label': 'Name', 'fullWidth': True},
-                ),
-                DomainEvent.handle(
-                    CreateElement,
-                    widget_type='button',
-                    props={'children': 'Save', 'onClick': save},
-                ),
+        {
+            'widget_type': 'box',
+            'props': {'sx': {'display': 'grid', 'gap': 2}},
+            'children': [
+                {
+                    'widget_type': 'text_field',
+                    'props': {'label': 'Name', 'fullWidth': True},
+                },
+                {
+                    'widget_type': 'button',
+                    'props': {'children': 'Save', 'onClick': save},
+                },
             ],
-        ),
+        },
     ],
 )
 
