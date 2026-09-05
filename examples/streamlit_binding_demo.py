@@ -7,7 +7,8 @@ import streamlit as st
 
 # ** app
 from tiferet_mui.blueprints.streamlit import build_streamlit_binding
-from tiferet_mui.domain import Element, Frame
+from tiferet_mui.domain import Frame
+from tiferet_mui.widgets import box, button, text_field
 
 # *** functions
 
@@ -43,22 +44,26 @@ def render_demo() -> None:
     :rtype: None
     '''
 
-    # Compose a fresh frame with two handlers for this Streamlit rerun.
+    # Compose a fresh frame with cataloged widgets for this Streamlit rerun.
     frame = Frame(
         elements=[
-            Element(
-                type='Button',
-                props={
-                    'children': 'Trigger callback',
-                    'onClick': record_button,
-                },
-            ),
-            Element(
-                type='Button',
-                props={
-                    'children': 'Trigger second callback',
-                    'onClick': record_second_button,
-                },
+            box(
+                text_field(
+                    'Demo field',
+                    fullWidth=True,
+                    placeholder='The catalog also composes text fields.',
+                ),
+                button(
+                    'Trigger callback',
+                    on_click=record_button,
+                    variant='contained',
+                ),
+                button(
+                    'Trigger second callback',
+                    on_click=record_second_button,
+                    variant='outlined',
+                ),
+                sx={'display': 'grid', 'gap': 2},
             ),
         ],
     )
