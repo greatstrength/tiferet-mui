@@ -14,6 +14,62 @@ from ..mappers import CallbackTableAggregate
 
 # *** events
 
+# ** event: create_element
+class CreateElement(DomainEvent):
+    '''Materialize a host-agnostic Element from a catalogued widget default.'''
+
+    # * method: execute
+    @DomainEvent.parameters_required(['widget_type'])
+    def execute(
+            self,
+            widget_type: str,
+            props: dict = None,
+            children: list = None,
+            **kwargs,
+        ) -> Element:
+        '''
+        Create an Element using one widget type's default data.
+
+        The ``children`` parameter describes nested Element nodes. A
+        ``children`` key inside ``props`` remains an ordinary Material UI prop,
+        such as a Button label.
+
+        :param widget_type: The catalog key for the Element default data.
+        :type widget_type: str
+        :param props: Properties that override the widget type's defaults.
+        :type props: dict | None
+        :param children: Elements nested beneath the created Element.
+        :type children: list | None
+        :param kwargs: Additional event parameters.
+        :type kwargs: dict
+        :return: The Element materialized from defaults and overrides.
+        :rtype: Element
+        '''
+
+        # Resolve the default Element data assigned to the requested widget type.
+        defaults = a.WIDGET_ELEMENT_DEFAULTS.get(widget_type)
+
+        # Report unknown widget types instead of silently creating invalid data.
+        if defaults is None:
+            self.raise_error(
+                a.WIDGET_TYPE_NOT_FOUND_ID,
+                widget_type=widget_type,
+            )
+
+        # Merge default and caller properties without conflating Element children.
+        element_props = {
+            **defaults['props'],
+            **(props or {}),
+        }
+        element_children = children if children is not None else []
+
+        # Return the resulting host-agnostic Element description.
+        return Element(
+            type=defaults['type'],
+            props=element_props,
+            children=element_children,
+        )
+
 # ** event: build_callback_table
 class BuildCallbackTable(DomainEvent):
     '''

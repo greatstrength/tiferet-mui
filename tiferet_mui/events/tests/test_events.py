@@ -9,9 +9,16 @@ import pytest
 from tiferet.assets import TiferetError
 from tiferet.testing import DomainEventTestBase
 
-from tiferet_mui.assets import CALLBACK_NOT_FOUND_ID
+from tiferet_mui.assets import (
+    CALLBACK_NOT_FOUND_ID,
+    WIDGET_TYPE_NOT_FOUND_ID,
+)
 from tiferet_mui.domain import CallbackTable, Frame
-from tiferet_mui.events import BuildCallbackTable, DispatchCallback
+from tiferet_mui.events import (
+    BuildCallbackTable,
+    CreateElement,
+    DispatchCallback,
+)
 from tiferet_mui.mappers import CallbackTableAggregate
 
 # *** functions
@@ -71,6 +78,79 @@ CALLBACK_TABLE = CallbackTable(
 )
 
 # *** tests
+
+# ** test: TestCreateElement
+class TestCreateElement(DomainEventTestBase):
+    '''
+    Tests Element construction through the DomainEvent test harness.
+    '''
+
+    # * attribute: event_cls
+    event_cls = CreateElement
+
+    # * attribute: dependencies
+    dependencies = {}
+
+    # * attribute: sample_kwargs
+    sample_kwargs = {'widget_type': 'button'}
+
+    # * attribute: required_params
+    required_params = ['widget_type']
+
+    # * method: test_merges_widget_defaults_props_and_children
+    def test_merges_widget_defaults_props_and_children(self, mock_dependencies):
+        '''
+        Test the event combines defaults, MUI properties, and nested elements.
+
+        :param mock_dependencies: The harness-provided event dependencies.
+        :type mock_dependencies: dict
+        '''
+
+        # Create a Button with property overrides and one nested Element child.
+        element = self.handle(
+            mock_dependencies,
+            props={
+                'children': 'Save',
+                'color': 'primary',
+                'variant': 'outlined',
+            },
+            children=[
+                {
+                    'type': 'TextField',
+                    'props': {'label': 'Name'},
+                },
+            ],
+        )
+
+        # Verify props override defaults without replacing Element children.
+        assert element.type == 'Button'
+        assert element.props == {
+            'children': 'Save',
+            'color': 'primary',
+            'variant': 'outlined',
+        }
+        assert len(element.children) == 1
+        assert element.children[0].type == 'TextField'
+        assert element.children[0].props == {'label': 'Name'}
+
+    # * method: test_raises_for_unrecognized_widget_type
+    def test_raises_for_unrecognized_widget_type(self, mock_dependencies):
+        '''
+        Test an unknown widget type raises the catalogued domain error.
+
+        :param mock_dependencies: The harness-provided event dependencies.
+        :type mock_dependencies: dict
+        '''
+
+        # Request a widget type without any registered default shape.
+        with pytest.raises(TiferetError) as error:
+            self.handle(
+                mock_dependencies,
+                widget_type='unknown',
+            )
+
+        # Verify the event surfaces the catalogue lookup error.
+        assert error.value.error_code == WIDGET_TYPE_NOT_FOUND_ID
 
 # ** test: TestBuildCallbackTable
 class TestBuildCallbackTable(DomainEventTestBase):

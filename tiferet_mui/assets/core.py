@@ -17,6 +17,9 @@ STATE_SERVICE_ID = 'state_service'
 # ** constant: callback_not_found_id
 CALLBACK_NOT_FOUND_ID = 'CALLBACK_NOT_FOUND'
 
+# ** constant: widget_type_not_found_id
+WIDGET_TYPE_NOT_FOUND_ID = 'WIDGET_TYPE_NOT_FOUND'
+
 # *** constants (models)
 
 # ** constant: callback_not_found_data
@@ -26,6 +29,17 @@ CALLBACK_NOT_FOUND_DATA = create_default_error_data(
         (
             EN_US,
             'No handler registered for callback_id {callback_id}.',
+        ),
+    ],
+)
+
+# ** constant: widget_type_not_found_data
+WIDGET_TYPE_NOT_FOUND_DATA = create_default_error_data(
+    'Widget Type Not Found',
+    [
+        (
+            EN_US,
+            'No Element defaults are registered for widget type {widget_type}.',
         ),
     ],
 )
@@ -46,4 +60,37 @@ STATE_SERVICE_REGISTRATION_DATA = {
             'parameters': {},
         },
     ],
+}
+
+# *** constants (widgets)
+
+# ** constant: button_element_defaults
+BUTTON_ELEMENT_DEFAULTS = {
+    'type': 'Button',
+    'props': {
+        'variant': 'contained',
+    },
+}
+
+# ** constant: text_field_element_defaults
+TEXT_FIELD_ELEMENT_DEFAULTS = {
+    'type': 'TextField',
+    'props': {
+        'variant': 'outlined',
+    },
+}
+
+# ** constant: box_element_defaults
+BOX_ELEMENT_DEFAULTS = {
+    'type': 'Box',
+    'props': {
+        'component': 'div',
+    },
+}
+
+# ** constant: widget_element_defaults
+WIDGET_ELEMENT_DEFAULTS = {
+    'button': BUTTON_ELEMENT_DEFAULTS,
+    'text_field': TEXT_FIELD_ELEMENT_DEFAULTS,
+    'box': BOX_ELEMENT_DEFAULTS,
 }
