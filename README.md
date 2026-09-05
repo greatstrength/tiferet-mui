@@ -1,2 +1,63 @@
 # tiferet-mui
-Tiferet-styled Material UI, Nivo, and Monaco bindings for Streamlit apps, using Streamlit's public component API.
+
+Tiferet MUI lets a Streamlit application describe and render Material UI
+widgets through Streamlit's supported public component API. It keeps widget
+trees and callback routing host-agnostic, while the optional Streamlit binding
+handles mounting and interaction delivery.
+
+## Install
+
+Install the core package when you only need its domain models, widget defaults,
+and domain events:
+
+```bash
+pip install tiferet-mui
+```
+
+Install the Streamlit extra to render a `Frame` in a Streamlit application:
+
+```bash
+pip install "tiferet-mui[streamlit]"
+```
+
+## Minimal usage
+
+Build a nested Frame from widget specifications, then mount it with the
+Streamlit binding:
+
+```python
+from tiferet_mui.blueprints.core import build_frame
+from tiferet_mui.blueprints.streamlit import build_streamlit_binding
+
+
+def save() -> None:
+    print('Saved.')
+
+
+frame = build_frame(
+    elements=[
+        {
+            'widget_type': 'box',
+            'props': {'sx': {'display': 'grid', 'gap': 2}},
+            'children': [
+                {
+                    'widget_type': 'text_field',
+                    'props': {'label': 'Name', 'fullWidth': True},
+                },
+                {
+                    'widget_type': 'button',
+                    'props': {'children': 'Save', 'onClick': save},
+                },
+            ],
+        },
+    ],
+)
+
+build_streamlit_binding()(frame, key='profile_form')
+```
+
+Run the included interactive example with:
+
+```bash
+streamlit run examples/streamlit_binding_demo.py
+```

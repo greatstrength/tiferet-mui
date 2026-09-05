@@ -3,9 +3,9 @@
 # *** imports
 
 # ** app
-from tiferet.testing import TransferObjectTestBase
-from tiferet_mui.domain import Frame
-from tiferet_mui.mappers import FrameTransferObject
+from tiferet.testing import AggregateTestBase, TransferObjectTestBase
+from tiferet_mui.domain import Element, Frame
+from tiferet_mui.mappers import FrameAggregate, FrameTransferObject
 
 # *** constants
 
@@ -63,6 +63,65 @@ FIELD_NORMALIZERS = {
 }
 
 # *** tests
+
+# ** test: TestFrameAggregate
+class TestFrameAggregate(AggregateTestBase):
+    '''
+    Tests mutable Frame composition through the mapper test harness.
+    '''
+
+    # * attribute: aggregate_cls
+    aggregate_cls = FrameAggregate
+
+    # * attribute: sample_data
+    sample_data = FRAME_SAMPLE_DATA
+
+    # * attribute: equality_fields
+    equality_fields = EQUALITY_FIELDS
+
+    # * attribute: field_normalizers
+    field_normalizers = FIELD_NORMALIZERS
+
+    # * attribute: set_attribute_params
+    set_attribute_params = [
+        ('elements', [], None),
+        ('unknown', 'value', 'INVALID_MODEL_ATTRIBUTE'),
+    ]
+
+    # * method: test_add_element
+    def test_add_element(self, aggregate):
+        '''
+        Test add_element appends a validated root Element.
+
+        :param aggregate: The harness-created Frame aggregate.
+        :type aggregate: FrameAggregate
+        '''
+
+        # Add one independently composed root Element.
+        aggregate.add_element(Element(type='Button'))
+
+        # Verify the aggregate retains both the original and added Elements.
+        assert [element.type for element in aggregate.elements] == ['Stack', 'Button']
+
+    # * method: test_freeze
+    def test_freeze(self, aggregate):
+        '''
+        Test freeze returns a Frame independent of later aggregate additions.
+
+        :param aggregate: The harness-created Frame aggregate.
+        :type aggregate: FrameAggregate
+        '''
+
+        # Freeze the initial Frame composition.
+        frozen = aggregate.freeze()
+
+        # Add another Element after creating the snapshot.
+        aggregate.add_element(Element(type='Button'))
+
+        # Verify the frozen domain Frame retains its initial root tree.
+        assert isinstance(frozen, Frame)
+        assert not isinstance(frozen, FrameAggregate)
+        assert [element.type for element in frozen.elements] == ['Stack']
 
 # ** test: TestFrameTransferObject
 class TestFrameTransferObject(TransferObjectTestBase):

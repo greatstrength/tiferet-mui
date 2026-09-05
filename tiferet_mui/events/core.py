@@ -10,9 +10,123 @@ from tiferet.events import DomainEvent
 
 from .. import assets as a
 from ..domain import CallbackTable, Element, Frame
-from ..mappers import CallbackTableAggregate
+from ..mappers import (
+    CallbackTableAggregate,
+    ElementAggregate,
+    FrameAggregate,
+)
 
 # *** events
+
+# ** event: create_element
+class CreateElement(DomainEvent):
+    '''Materialize a host-agnostic Element from a catalogued widget default.'''
+
+    # * method: execute
+    @DomainEvent.parameters_required(['widget_type'])
+    def execute(
+            self,
+            widget_type: str,
+            props: dict = None,
+            children: list = None,
+            **kwargs,
+        ) -> Element:
+        '''
+        Create an Element using one widget type's default data.
+
+        The ``children`` parameter describes nested Element nodes. A
+        ``children`` key inside ``props`` remains an ordinary Material UI prop,
+        such as a Button label.
+
+        :param widget_type: The catalog key for the Element default data.
+        :type widget_type: str
+        :param props: Properties that override the widget type's defaults.
+        :type props: dict | None
+        :param children: Elements nested beneath the created Element.
+        :type children: list | None
+        :param kwargs: Additional event parameters.
+        :type kwargs: dict
+        :return: The Element materialized from defaults and overrides.
+        :rtype: Element
+        '''
+
+        # Resolve the default Element data assigned to the requested widget type.
+        defaults = a.WIDGET_ELEMENT_DEFAULTS.get(widget_type)
+
+        # Report unknown widget types instead of silently creating invalid data.
+        if defaults is None:
+            self.raise_error(
+                a.WIDGET_TYPE_NOT_FOUND_ID,
+                widget_type=widget_type,
+            )
+
+        # Merge default and caller properties without conflating Element children.
+        element_props = {
+            **defaults['props'],
+            **(props or {}),
+        }
+        element_children = children if children is not None else []
+
+        # Compose the Element through its validated aggregate mutation surface.
+        element = ElementAggregate(type='')
+        element.set_type(defaults['type'])
+        element.set_props(element_props)
+        element.set_children(element_children)
+
+        # Return the aggregate's immutable Element snapshot.
+        return element.freeze()
+
+# ** event: create_frame
+class CreateFrame(DomainEvent):
+    '''Materialize a nested Frame from recursive widget specification data.'''
+
+    # * method: execute
+    @DomainEvent.parameters_required(['elements'])
+    def execute(self, elements: list, **kwargs) -> Frame:
+        '''
+        Create a Frame from recursive widget specifications.
+
+        :param elements: The root widget specifications for the Frame.
+        :type elements: list
+        :param kwargs: Additional event parameters.
+        :type kwargs: dict
+        :return: The immutable Frame described by the specifications.
+        :rtype: Frame
+        '''
+
+        # Build each root Element before adding it to the mutable Frame aggregate.
+        frame = FrameAggregate()
+        for element_spec in elements:
+            frame.add_element(self._create_element(element_spec))
+
+        # Return the aggregate's immutable Frame snapshot.
+        return frame.freeze()
+
+    # * method: _create_element (static)
+    @staticmethod
+    def _create_element(element_spec: dict) -> Element:
+        '''
+        Materialize one recursive widget specification.
+
+        :param element_spec: One widget specification and its nested children.
+        :type element_spec: dict
+        :return: The materialized Element.
+        :rtype: Element
+        '''
+
+        # Materialize nested specifications before constructing this Element.
+        children = [
+            CreateFrame._create_element(child)
+            for child in element_spec.get('children', [])
+        ]
+
+        # Reuse CreateElement so defaults and unknown-widget errors stay central.
+        return DomainEvent.handle(
+            CreateElement,
+            widget_type=element_spec['widget_type'],
+            props=element_spec.get('props'),
+            children=children,
+        )
 
 # ** event: build_callback_table
 class BuildCallbackTable(DomainEvent):

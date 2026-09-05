@@ -6,8 +6,8 @@
 import streamlit as st
 
 # ** app
+from tiferet_mui.blueprints.core import build_frame
 from tiferet_mui.blueprints.streamlit import build_streamlit_binding
-from tiferet_mui.domain import Element, Frame
 
 # *** functions
 
@@ -43,23 +43,40 @@ def render_demo() -> None:
     :rtype: None
     '''
 
-    # Compose a fresh frame with two handlers for this Streamlit rerun.
-    frame = Frame(
+    # Compose the nested screen through the public blueprint-level API.
+    frame = build_frame(
         elements=[
-            Element(
-                type='Button',
-                props={
-                    'children': 'Trigger callback',
-                    'onClick': record_button,
-                },
-            ),
-            Element(
-                type='Button',
-                props={
-                    'children': 'Trigger second callback',
-                    'onClick': record_second_button,
-                },
-            ),
+            {
+                'widget_type': 'box',
+                'props': {'sx': {'display': 'grid', 'gap': 2}},
+                'children': [
+                    {
+                        'widget_type': 'text_field',
+                        'props': {
+                            'label': 'Demo field',
+                            'fullWidth': True,
+                            'placeholder': (
+                                'The catalog also composes text fields.'
+                            ),
+                        },
+                    },
+                    {
+                        'widget_type': 'button',
+                        'props': {
+                            'children': 'Trigger callback',
+                            'onClick': record_button,
+                        },
+                    },
+                    {
+                        'widget_type': 'button',
+                        'props': {
+                            'children': 'Trigger second callback',
+                            'onClick': record_second_button,
+                            'variant': 'outlined',
+                        },
+                    },
+                ],
+            },
         ],
     )
 
@@ -69,7 +86,6 @@ def render_demo() -> None:
 
     # Display the last callback outcome owned by the host application session.
     st.write(st.session_state.get('mui_demo_result', 'Awaiting interaction.'))
-
 
 # Render the standalone Streamlit demo.
 render_demo()

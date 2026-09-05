@@ -1,13 +1,20 @@
 """Host-agnostic binding composition for Tiferet MUI."""
 
+from __future__ import annotations
+
 # *** imports
 
 # ** core
-from typing import Any, Callable
+from typing import TYPE_CHECKING, Any, Callable
 
 # ** app
+from tiferet.events import DomainEvent
 from ..assets import STATE_SERVICE_ID
 from ..di import create_di_context
+from ..events import CreateFrame
+
+if TYPE_CHECKING:
+    from ..domain import Frame
 
 # *** functions
 
@@ -62,3 +69,22 @@ def build_handler_builder(
 
     # Return the state-backed handler builder to the dialect-specific edge.
     return build_handler
+
+# *** blueprints
+
+# ** blueprint: build_frame
+def build_frame(elements: list) -> Frame:
+    '''
+    Build one immutable Frame from recursive widget specifications.
+
+    :param elements: The root widget specifications for the Frame.
+    :type elements: list
+    :return: The immutable Frame described by the specifications.
+    :rtype: Frame
+    '''
+
+    # Delegate recursive Element and Frame construction to the domain event.
+    return DomainEvent.handle(
+        CreateFrame,
+        elements=elements,
+    )
