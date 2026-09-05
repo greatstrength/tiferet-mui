@@ -10,7 +10,11 @@ from tiferet.events import DomainEvent
 
 from .. import assets as a
 from ..domain import CallbackTable, Element, Frame
-from ..mappers import CallbackTableAggregate
+from ..mappers import (
+    CallbackTableAggregate,
+    ElementAggregate,
+    FrameAggregate,
+)
 
 # *** events
 
@@ -63,12 +67,66 @@ class CreateElement(DomainEvent):
         }
         element_children = children if children is not None else []
 
-        # Return the resulting host-agnostic Element description.
-        return Element(
-            type=defaults['type'],
-            props=element_props,
-            children=element_children,
+        # Compose the Element through its validated aggregate mutation surface.
+        element = ElementAggregate(type='')
+        element.set_type(defaults['type'])
+        element.set_props(element_props)
+        element.set_children(element_children)
+
+        # Return the aggregate's immutable Element snapshot.
+        return element.freeze()
+
+# ** event: create_frame
+class CreateFrame(DomainEvent):
+    '''Materialize a nested Frame from recursive widget specification data.'''
+    # * method: execute
+    @DomainEvent.parameters_required(['elements'])
+    def execute(self, elements: list, **kwargs) -> Frame:
+        '''
+        Create a Frame from recursive widget specifications.
+
+        :param elements: The root widget specifications for the Frame.
+        :type elements: list
+        :param kwargs: Additional event parameters.
+        :type kwargs: dict
+        :return: The immutable Frame described by the specifications.
+        :rtype: Frame
+        '''
+
+        # Build each root Element before adding it to the mutable Frame aggregate.
+        frame = FrameAggregate()
+        for element_spec in elements:
+            frame.add_element(self._create_element(element_spec))
+
+        # Return the aggregate's immutable Frame snapshot.
+        return frame.freeze()
+
+    # * method: _create_element (static)
+    @staticmethod
+    def _create_element(element_spec: dict) -> Element:
+        '''
+        Materialize one recursive widget specification.
+
+        :param element_spec: One widget specification and its nested children.
+        :type element_spec: dict
+        :return: The materialized Element.
+        :rtype: Element
+        '''
+
+        # Materialize nested specifications before constructing this Element.
+        children = [
+            CreateFrame._create_element(child)
+            for child in element_spec.get('children', [])
+        ]
+
+        # Reuse CreateElement so defaults and unknown-widget errors stay central.
+        return DomainEvent.handle(
+            CreateElement,
+            widget_type=element_spec['widget_type'],
+            props=element_spec.get('props'),
+            children=children,
         )
+
 
 # ** event: build_callback_table
 class BuildCallbackTable(DomainEvent):

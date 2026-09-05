@@ -4,9 +4,12 @@
 
 __all__ = [
     'CallbackTableAggregate',
+    'ElementAggregate',
+    'FrameAggregate',
     'FrameTransferObject',
 ]
 
 # ** app
 from .callback_table import CallbackTableAggregate
-from .frame import FrameTransferObject
+from .element import ElementAggregate
+from .frame import FrameAggregate, FrameTransferObject

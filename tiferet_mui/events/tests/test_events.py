@@ -17,9 +17,10 @@ from tiferet_mui.domain import CallbackTable, Frame
 from tiferet_mui.events import (
     BuildCallbackTable,
     CreateElement,
+    CreateFrame,
     DispatchCallback,
 )
-from tiferet_mui.mappers import CallbackTableAggregate
+from tiferet_mui.mappers import CallbackTableAggregate, FrameAggregate
 
 # *** functions
 
@@ -78,6 +79,84 @@ CALLBACK_TABLE = CallbackTable(
 )
 
 # *** tests
+
+# ** test: TestCreateFrame
+class TestCreateFrame(DomainEventTestBase):
+    '''
+    Tests recursive Frame construction through the DomainEvent test harness.
+    '''
+
+    # * attribute: event_cls
+    event_cls = CreateFrame
+
+    # * attribute: dependencies
+    dependencies = {}
+
+    # * attribute: sample_kwargs
+    sample_kwargs = {
+        'elements': [
+            {
+                'widget_type': 'box',
+                'children': [
+                    {
+                        'widget_type': 'button',
+                        'props': {'children': 'Save'},
+                    },
+                ],
+            },
+        ],
+    }
+
+    # * attribute: required_params
+    required_params = ['elements']
+
+    # * method: test_builds_frozen_nested_frame
+    def test_builds_frozen_nested_frame(self, mock_dependencies):
+        '''
+        Test recursive specifications produce a frozen Frame tree.
+
+        :param mock_dependencies: The harness-provided event dependencies.
+        :type mock_dependencies: dict
+        '''
+
+        # Build the recursive widget specifications through DomainEvent.handle.
+        frame = self.handle(mock_dependencies)
+
+        # Verify the event returns a frozen Frame with materialized descendants.
+        assert isinstance(frame, Frame)
+        assert not isinstance(frame, FrameAggregate)
+        assert frame.elements[0].type == 'Box'
+        assert frame.elements[0].props == {'component': 'div'}
+        assert frame.elements[0].children[0].type == 'Button'
+        assert frame.elements[0].children[0].props == {
+            'children': 'Save',
+            'variant': 'contained',
+        }
+
+    # * method: test_raises_for_unknown_nested_widget_type
+    def test_raises_for_unknown_nested_widget_type(self, mock_dependencies):
+        '''
+        Test unknown widget types reuse CreateElement's catalogue error.
+
+        :param mock_dependencies: The harness-provided event dependencies.
+        :type mock_dependencies: dict
+        '''
+
+        # Build a tree that contains an unregistered child widget type.
+        with pytest.raises(TiferetError) as error:
+            self.handle(
+                mock_dependencies,
+                elements=[
+                    {
+                        'widget_type': 'box',
+                        'children': [{'widget_type': 'unknown'}],
+                    },
+                ],
+            )
+
+        # Verify recursive construction exposes the shared unknown-widget error.
+        assert error.value.error_code == WIDGET_TYPE_NOT_FOUND_ID
+
 
 # ** test: TestCreateElement
 class TestCreateElement(DomainEventTestBase):

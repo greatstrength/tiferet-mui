@@ -6,12 +6,48 @@
 from typing import Any, ClassVar, Dict
 
 # ** app
-from tiferet.mappers import TransferObject
+from tiferet.mappers import Aggregate, TransferObject
 
-from ..domain import Frame
+from ..domain import Element, Frame
 
 # *** mappers
 
+# ** mapper: frame_aggregate
+class FrameAggregate(Frame, Aggregate):
+    '''
+    Provides a validated mutation surface while a Frame is composed one Element
+    at a time before callers receive its immutable domain snapshot.
+    '''
+
+    # * method: add_element
+    def add_element(self, element: Element) -> None:
+        '''
+        Add one root Element to the composed Frame.
+
+        :param element: The Element to add to the Frame.
+        :type element: Element
+        :return: None
+        :rtype: None
+        '''
+
+        # Copy the current tree before adding the next root Element.
+        elements = list(self.elements)
+        elements.append(element)
+
+        # Apply the validated root-elements mutation.
+        self.set_attribute('elements', elements)
+
+    # * method: freeze
+    def freeze(self) -> Frame:
+        '''
+        Freeze the working Frame into an independent domain snapshot.
+
+        :return: The immutable Frame domain object.
+        :rtype: Frame
+        '''
+
+        # Copy root Elements so later aggregate additions do not affect the snapshot.
+        return Frame(elements=list(self.elements))
 # ** mapper: frame_transfer_object
 class FrameTransferObject(Frame, TransferObject):
     '''

@@ -6,10 +6,8 @@
 import streamlit as st
 
 # ** app
-from tiferet.events import DomainEvent
+from tiferet_mui.blueprints.core import build_frame
 from tiferet_mui.blueprints.streamlit import build_streamlit_binding
-from tiferet_mui.domain import Frame
-from tiferet_mui.events import CreateElement
 
 # *** functions
 
@@ -45,44 +43,40 @@ def render_demo() -> None:
     :rtype: None
     '''
 
-    # Compose nested Element descriptions from the catalogued event defaults.
-    frame = Frame(
+    # Compose the nested screen through the public blueprint-level API.
+    frame = build_frame(
         elements=[
-            DomainEvent.handle(
-                CreateElement,
-                widget_type='box',
-                props={'sx': {'display': 'grid', 'gap': 2}},
-                children=[
-                    DomainEvent.handle(
-                        CreateElement,
-                        widget_type='text_field',
-                        props={
+            {
+                'widget_type': 'box',
+                'props': {'sx': {'display': 'grid', 'gap': 2}},
+                'children': [
+                    {
+                        'widget_type': 'text_field',
+                        'props': {
                             'label': 'Demo field',
                             'fullWidth': True,
                             'placeholder': (
                                 'The catalog also composes text fields.'
                             ),
                         },
-                    ),
-                    DomainEvent.handle(
-                        CreateElement,
-                        widget_type='button',
-                        props={
+                    },
+                    {
+                        'widget_type': 'button',
+                        'props': {
                             'children': 'Trigger callback',
                             'onClick': record_button,
                         },
-                    ),
-                    DomainEvent.handle(
-                        CreateElement,
-                        widget_type='button',
-                        props={
+                    },
+                    {
+                        'widget_type': 'button',
+                        'props': {
                             'children': 'Trigger second callback',
                             'onClick': record_second_button,
                             'variant': 'outlined',
                         },
-                    ),
+                    },
                 ],
-            ),
+            },
         ],
     )
 

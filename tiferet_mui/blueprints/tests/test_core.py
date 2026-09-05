@@ -8,7 +8,8 @@ import sys
 from pathlib import Path
 
 # ** app
-from tiferet_mui.blueprints.core import build_handler_builder
+from tiferet_mui.blueprints.core import build_frame, build_handler_builder
+from tiferet_mui.domain import Frame
 
 # *** classes
 
@@ -75,6 +76,33 @@ class StubDIContext:
         return self.state_service
 
 # *** tests
+
+# ** test: test_build_frame_materializes_widget_specs
+def test_build_frame_materializes_widget_specs():
+    '''
+    Test the public blueprint delegates recursive widget construction.
+    '''
+
+    # Build one nested Frame from plain consumer-facing specification data.
+    frame = build_frame(
+        elements=[
+            {
+                'widget_type': 'box',
+                'children': [
+                    {
+                        'widget_type': 'button',
+                        'props': {'children': 'Save'},
+                    },
+                ],
+            },
+        ],
+    )
+
+    # Verify the blueprint returns the materialized immutable Frame tree.
+    assert isinstance(frame, Frame)
+    assert frame.elements[0].type == 'Box'
+    assert frame.elements[0].children[0].type == 'Button'
+
 
 # ** test: test_handler_builder_resolves_state_and_delivers_payload
 def test_handler_builder_resolves_state_and_delivers_payload():

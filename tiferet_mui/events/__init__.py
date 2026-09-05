@@ -5,8 +5,9 @@
 __all__ = [
     'BuildCallbackTable',
     'CreateElement',
+    'CreateFrame',
     'DispatchCallback',
 ]
 
 # ** app
-from .core import BuildCallbackTable, CreateElement, DispatchCallback
+from .core import BuildCallbackTable, CreateElement, CreateFrame, DispatchCallback
