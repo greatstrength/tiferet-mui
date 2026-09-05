@@ -106,3 +106,64 @@ def test_demo_dispatches_each_real_button_interaction():
         # Stop the temporary Streamlit process even when browser assertions fail.
         process.terminate()
         process.wait(timeout=10)
+
+# ** test: test_gallery_renders_every_catalogued_widget
+def test_gallery_renders_every_catalogued_widget():
+    '''Test the gallery renders every widget type through real browser frames.'''
+
+    # Skip cleanly for contributors who have not installed browser test tooling.
+    playwright = pytest.importorskip('playwright.sync_api')
+    pytest.importorskip('streamlit')
+    port = _find_open_port()
+    repository_root = Path(__file__).parents[3]
+    gallery_path = repository_root / 'example' / 'app.py'
+    url = f'http://127.0.0.1:{port}'
+    process = subprocess.Popen(
+        [
+            sys.executable,
+            '-m',
+            'streamlit',
+            'run',
+            str(gallery_path),
+            '--server.headless',
+            'true',
+            '--server.port',
+            str(port),
+            '--browser.gatherUsageStats',
+            'false',
+        ],
+        cwd=repository_root,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+
+    try:
+        # Wait for the temporary gallery before connecting a real browser.
+        _wait_for_server(url + '/_stcore/health')
+
+        # Confirm every caption and component-frame sample is visibly rendered.
+        samples = [
+            ('button', 'BUTTON SAMPLE'),
+            ('text_field', 'TEXT FIELD SAMPLE'),
+            ('box', 'BOX SAMPLE'),
+            ('icon', 'star'),
+            ('card', 'CARD SAMPLE'),
+            ('form_label', 'FORM LABEL SAMPLE'),
+            ('typography', 'TYPOGRAPHY SAMPLE'),
+        ]
+        with playwright.sync_playwright() as browser_api:
+            browser = browser_api.chromium.launch()
+            page = browser.new_page()
+            page.goto(url)
+            for index, (widget_type, sample) in enumerate(samples):
+                page.get_by_text(widget_type, exact=True).wait_for()
+                page.frame_locator('iframe').nth(index).get_by_text(
+                    sample,
+                    exact=True,
+                ).first.wait_for()
+            browser.close()
+    finally:
+        # Stop the temporary Streamlit process even when browser assertions fail.
+        process.terminate()
+        process.wait(timeout=10)

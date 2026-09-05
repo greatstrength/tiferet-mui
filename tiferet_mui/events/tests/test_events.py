@@ -211,6 +211,43 @@ class TestCreateElement(DomainEventTestBase):
         assert element.children[0].type == 'TextField'
         assert element.children[0].props == {'label': 'Name'}
 
+    # * method: test_materializes_new_widget_default_types
+    @pytest.mark.parametrize(
+        ('widget_type', 'element_type'),
+        [
+            ('icon', 'Icon'),
+            ('card', 'Card'),
+            ('form_label', 'FormLabel'),
+            ('typography', 'Typography'),
+        ],
+    )
+    def test_materializes_new_widget_default_types(
+            self,
+            mock_dependencies,
+            widget_type,
+            element_type,
+        ):
+        '''
+        Test each expanded catalog widget materializes its MUI element type.
+
+        :param mock_dependencies: The harness-provided event dependencies.
+        :type mock_dependencies: dict
+        :param widget_type: The catalog key used to create the Element.
+        :type widget_type: str
+        :param element_type: The Material UI component type expected in the Element.
+        :type element_type: str
+        '''
+
+        # Materialize the widget through the public event test-harness path.
+        element = self.handle(
+            mock_dependencies,
+            widget_type=widget_type,
+        )
+
+        # Verify the catalog defaults produce the confirmed type and empty props.
+        assert element.type == element_type
+        assert element.props == {}
+
     # * method: test_raises_for_unrecognized_widget_type
     def test_raises_for_unrecognized_widget_type(self, mock_dependencies):
         '''
