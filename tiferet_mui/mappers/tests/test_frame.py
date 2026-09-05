@@ -123,7 +123,6 @@ class TestFrameAggregate(AggregateTestBase):
         assert not isinstance(frozen, FrameAggregate)
         assert [element.type for element in frozen.elements] == ['Stack']
 
-
 # ** test: TestFrameTransferObject
 class TestFrameTransferObject(TransferObjectTestBase):
     '''

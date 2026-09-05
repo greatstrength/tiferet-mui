@@ -157,7 +157,6 @@ class TestCreateFrame(DomainEventTestBase):
         # Verify recursive construction exposes the shared unknown-widget error.
         assert error.value.error_code == WIDGET_TYPE_NOT_FOUND_ID
 
-
 # ** test: TestCreateElement
 class TestCreateElement(DomainEventTestBase):
     '''

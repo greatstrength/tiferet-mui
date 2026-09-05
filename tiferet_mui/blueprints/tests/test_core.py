@@ -103,7 +103,6 @@ def test_build_frame_materializes_widget_specs():
     assert frame.elements[0].type == 'Box'
     assert frame.elements[0].children[0].type == 'Button'
 
-
 # ** test: test_handler_builder_resolves_state_and_delivers_payload
 def test_handler_builder_resolves_state_and_delivers_payload():
     '''Test the core composition helper resolves state before building callbacks.'''

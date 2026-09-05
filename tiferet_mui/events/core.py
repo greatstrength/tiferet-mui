@@ -79,6 +79,7 @@ class CreateElement(DomainEvent):
 # ** event: create_frame
 class CreateFrame(DomainEvent):
     '''Materialize a nested Frame from recursive widget specification data.'''
+
     # * method: execute
     @DomainEvent.parameters_required(['elements'])
     def execute(self, elements: list, **kwargs) -> Frame:
@@ -126,7 +127,6 @@ class CreateFrame(DomainEvent):
             props=element_spec.get('props'),
             children=children,
         )
-
 
 # ** event: build_callback_table
 class BuildCallbackTable(DomainEvent):
