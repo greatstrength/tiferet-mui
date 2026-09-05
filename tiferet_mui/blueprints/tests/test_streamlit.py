@@ -6,7 +6,6 @@
 from tiferet_mui.blueprints.streamlit import build_streamlit_binding
 from tiferet_mui.domain import Element, Frame
 
-
 # *** tests
 
 # ** test: test_binding_mounts_component_and_dispatches_host_report

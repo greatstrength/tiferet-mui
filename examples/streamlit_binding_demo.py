@@ -22,7 +22,6 @@ def record_button() -> None:
     # Record which registered callback handled the latest host report.
     st.session_state['mui_demo_result'] = 'Button callback delivered.'
 
-
 # ** function: record_second_button
 def record_second_button() -> None:
     '''Record a second button interaction in the host-owned Streamlit session.
@@ -33,7 +32,6 @@ def record_second_button() -> None:
 
     # Record that the second callback table entry received its host report.
     st.session_state['mui_demo_result'] = 'Second button callback delivered.'
-
 
 # *** blueprints
 

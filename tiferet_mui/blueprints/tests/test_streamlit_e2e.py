@@ -29,7 +29,6 @@ def _find_open_port() -> int:
         server.bind(('127.0.0.1', 0))
         return server.getsockname()[1]
 
-
 # ** function: _wait_for_server
 def _wait_for_server(url: str) -> None:
     '''
@@ -51,7 +50,6 @@ def _wait_for_server(url: str) -> None:
 
     # Fail with an ordinary assertion when the server does not become healthy.
     pytest.fail(f'Streamlit server did not start at {url}.')
-
 
 # *** tests
 

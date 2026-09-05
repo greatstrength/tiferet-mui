@@ -40,7 +40,6 @@ class StubStateService:
         # Return the requested state value.
         return self.values[key]
 
-
 # ** class: stub_di_context
 class StubDIContext:
     '''Record dialect resolution and return a preconfigured state service.'''
@@ -75,7 +74,6 @@ class StubDIContext:
         # Return the configured dependency.
         return self.state_service
 
-
 # *** tests
 
 # ** test: test_handler_builder_resolves_state_and_delivers_payload
@@ -97,7 +95,6 @@ def test_handler_builder_resolves_state_and_delivers_payload():
     # Verify the requested dialect and the retrieved payload reached the consumer.
     assert di_context.requests == [('state_service', 'test')]
     assert received == [{'callback_00': {}}]
-
 
 # ** test: test_core_import_does_not_require_streamlit
 def test_core_import_does_not_require_streamlit():

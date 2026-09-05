@@ -31,7 +31,6 @@ def test_streamlit_state_proxies_session_state(monkeypatch):
     assert state_service.get('component') == {'callback_00': {}}
     assert session_state['component'] == {'callback_00': {}}
 
-
 # ** test: test_bundle_path_resolves_vendored_component
 def test_bundle_path_resolves_vendored_component():
     '''Test the component path resolves to the packaged frontend entrypoint.'''

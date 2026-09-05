@@ -29,7 +29,6 @@ def get_streamlit_bundle_path() -> str:
     # Resolve the package-relative frontend bundle for Streamlit's path API.
     return str(Path(__file__).parents[1] / 'assets' / 'streamlit')
 
-
 # *** utils
 
 # ** util: streamlit_state

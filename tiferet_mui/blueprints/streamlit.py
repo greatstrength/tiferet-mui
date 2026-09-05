@@ -39,7 +39,6 @@ def _serialize_element(element: Any) -> str:
         f'{props},[{children}])'
     )
 
-
 # ** function: _serialize_props
 def _serialize_props(props: dict[str, Any]) -> str:
     '''
