@@ -93,6 +93,5 @@ def render_demo() -> None:
     # Display the last callback outcome owned by the host application session.
     st.write(st.session_state.get('mui_demo_result', 'Awaiting interaction.'))
 
-
 # Render the standalone Streamlit demo.
 render_demo()
