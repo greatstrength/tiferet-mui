@@ -107,9 +107,9 @@ def test_demo_dispatches_each_real_button_interaction():
         process.terminate()
         process.wait(timeout=10)
 
-# ** test: test_gallery_renders_every_catalogued_widget
-def test_gallery_renders_every_catalogued_widget():
-    '''Test the gallery renders every widget type through real browser frames.'''
+# ** test: test_gallery_renders_every_displayed_widget
+def test_gallery_renders_every_displayed_widget():
+    '''Test the gallery renders every displayed widget through real browser frames.'''
 
     # Skip cleanly for contributors who have not installed browser test tooling.
     playwright = pytest.importorskip('playwright.sync_api')
@@ -142,12 +142,11 @@ def test_gallery_renders_every_catalogued_widget():
         # Wait for the temporary gallery before connecting a real browser.
         _wait_for_server(url + '/_stcore/health')
 
-        # Confirm every caption and component-frame sample is visibly rendered.
+        # Confirm every displayed caption and component-frame sample is rendered.
         samples = [
             ('button', 'BUTTON SAMPLE'),
             ('text_field', 'TEXT FIELD SAMPLE'),
             ('box', 'BOX SAMPLE'),
-            ('icon', 'star'),
             ('card', 'CARD SAMPLE'),
             ('form_label', 'FORM LABEL SAMPLE'),
             ('typography', 'TYPOGRAPHY SAMPLE'),

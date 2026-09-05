@@ -85,6 +85,12 @@ BOX_ELEMENT_DEFAULTS = {
     'type': 'Box',
     'props': {
         'component': 'div',
+        'sx': {
+            'border': '1px solid',
+            'borderColor': 'divider',
+            'borderRadius': 1,
+            'p': 2,
+        },
     },
 }
 
@@ -97,7 +103,12 @@ ICON_ELEMENT_DEFAULTS = {
 # ** constant: card_element_defaults
 CARD_ELEMENT_DEFAULTS = {
     'type': 'Card',
-    'props': {},
+    'props': {
+        'sx': {
+            'p': 2,
+        },
+        'variant': 'outlined',
+    },
 }
 
 # ** constant: form_label_element_defaults
@@ -109,7 +120,9 @@ FORM_LABEL_ELEMENT_DEFAULTS = {
 # ** constant: typography_element_defaults
 TYPOGRAPHY_ELEMENT_DEFAULTS = {
     'type': 'Typography',
-    'props': {},
+    'props': {
+        'variant': 'h6',
+    },
 }
 
 # ** constant: widget_element_defaults

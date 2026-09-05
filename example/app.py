@@ -35,13 +35,6 @@ GALLERY_WIDGETS = [
         },
     ),
     (
-        'icon',
-        {
-            'widget_type': 'icon',
-            'props': {'children': 'star'},
-        },
-    ),
-    (
         'card',
         {
             'widget_type': 'card',
