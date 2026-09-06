@@ -85,6 +85,43 @@ BOX_ELEMENT_DEFAULTS = {
     'type': 'Box',
     'props': {
         'component': 'div',
+        'sx': {
+            'border': '1px solid',
+            'borderColor': 'divider',
+            'borderRadius': 1,
+            'p': 2,
+        },
+    },
+}
+
+# ** constant: icon_element_defaults
+ICON_ELEMENT_DEFAULTS = {
+    'type': 'Icon',
+    'props': {},
+}
+
+# ** constant: card_element_defaults
+CARD_ELEMENT_DEFAULTS = {
+    'type': 'Card',
+    'props': {
+        'sx': {
+            'p': 2,
+        },
+        'variant': 'outlined',
+    },
+}
+
+# ** constant: form_label_element_defaults
+FORM_LABEL_ELEMENT_DEFAULTS = {
+    'type': 'FormLabel',
+    'props': {},
+}
+
+# ** constant: typography_element_defaults
+TYPOGRAPHY_ELEMENT_DEFAULTS = {
+    'type': 'Typography',
+    'props': {
+        'variant': 'h6',
     },
 }
 
@@ -93,4 +130,8 @@ WIDGET_ELEMENT_DEFAULTS = {
     'button': BUTTON_ELEMENT_DEFAULTS,
     'text_field': TEXT_FIELD_ELEMENT_DEFAULTS,
     'box': BOX_ELEMENT_DEFAULTS,
+    'icon': ICON_ELEMENT_DEFAULTS,
+    'card': CARD_ELEMENT_DEFAULTS,
+    'form_label': FORM_LABEL_ELEMENT_DEFAULTS,
+    'typography': TYPOGRAPHY_ELEMENT_DEFAULTS,
 }
